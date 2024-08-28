@@ -1,18 +1,6 @@
-# /// pyproject
-# flappyBirdProject
-# name = "name"
-# version = "version"
-# description = "description"
-# readme = {file = "README.txt", content-type = "text/markdown"}
-# requires-python = ">=3.11"
-#
-# dependencies = [
-#     "pygame-ce",
-# ]
-# ///
-
 import pygame
 import platform 
+import os
 import asyncio
 import random
 from math import ceil
@@ -39,7 +27,8 @@ hand = pygame.SYSTEM_CURSOR_HAND
 
 
 # ---------------------------- GAME VARIABLES ---------------------------- #
-fetched_highScore = old_highscore = fetchedTotalCoins = fetchedBirdStatus = birdPrices = None
+top3PersonalHughscoreDict = fetchedTotalCoins = birdPrices = None
+app_data_dict = {}
 exit_game = game_over = False
 fps = 60
 # ---------------------------- GAME VARIABLES ---------------------------- #
@@ -49,40 +38,69 @@ fps = 60
 # ----------------------- PLATFORM SPECIFIC FUNCTIONS -------------------- #
 if __import__("sys").platform == "emscripten":
         from platform import window
-        platform = "browser"
+        import json
+        runningOn = "browser"
 else:   
-        import os
         import pickle
-        platform = "localDevice"
+        runningOn = "localDevice"    
+
+# Minimizing game window
+def minimizeGameForBrowser(): 
+    platform.window.canvas.style.width = f"{float(platform.window.myBackground.offsetWidth)*(408/900)}px"
+    platform.window.canvas.style.height = f"{float(platform.window.myBackground.offsetWidth)*(304/900)}px"
+
+# Maximizing game window
+def maximizeGameForBrowser():
+    platform.window.canvas.style.width = f"{float(platform.window.myBackground.offsetWidth)}px"
+    platform.window.canvas.style.height = f"{float(platform.window.myBackground.offsetWidth)*(600/1000)}px"
+
+# Presetting the window to minimized state
+if runningOn == "browser":
+    minimizeGameForBrowser()
+    platform.window.myBackground.style.backgroundImage = "url(consoleImage.png)"
 
 # Saving game-data
-def saveGameData(runningPlatform=platform):
+def saveGameData(runningPlatform=runningOn):
     if runningPlatform == "browser":
-        pass
+        window.localStorage.setItem("appData", json.dumps(app_data_dict))
     else:
-        # with open('appdata.dat', 'wb') as file_stream:
-        #     pickle.dump(app_data_dict, file_stream)
-        pass
+        with open('appdata.dat', 'wb') as file_stream:
+            pickle.dump(app_data_dict, file_stream)
+
 
 # Loading game-data
-def loadGameData(runningPlatform=platform):
-    global fetched_highscore, old_highscore, fetchedTotalCoins, fetchedBirdStatus, birdPrices
-    if runningPlatform == "Broswer":
-        pass
+def loadGameData(runningPlatform=runningOn):
+    global top3PersonalHughscoreDict, fetchedTotalCoins, birdPrices, app_data_dict
+    if runningPlatform == "browser":
+        app_data_dict = window.localStorage.getItem("appData")
+        # First time running
+        if app_data_dict == None:
+            app_data_dict = {"HighScore": {"#1":0, "#2":0, "#3":0}, "TotalCoins": 0, "BirdsStatus": {"BlueBird": "unlocked", "GreenBird": "locked", "DarkGreenBird": "locked", "PinkBird": "locked"}}
+            window.localStorage.setItem("appData", json.dumps(app_data_dict))
+        else:
+            app_data_dict = json.loads(app_data_dict)
     else:
         if os.path.isfile("appdata.dat"):
             with open("appdata.dat", "rb") as file:
                 data = file.read()
                 app_data_dict = pickle.loads(data)
         else:
-            # first time running
-            app_data_dict = {"HighScore": {"#1":None, "#2":None, "#3":None}, "TotalCoins": 0, "BirdsStatus": {"BlueBird": 'unlocked', "GreenBird": "locked", "DarkGreenBird": "locked", "PinkBird": 'locked'}}
+            # First time running
+            app_data_dict = {"HighScore": {"#1":0, "#2":0, "#3":0}, "TotalCoins": 0, "BirdsStatus": {"BlueBird": "unlocked", "GreenBird": "locked", "DarkGreenBird": "locked", "PinkBird": "locked"}}
     
-    fetched_highscore = app_data_dict['HighScore']
-    old_highscore = fetched_highscore
-    fetchedBirdStatus = app_data_dict['BirdsStatus']
-    fetchedTotalCoins = app_data_dict['TotalCoins']
+    top3PersonalHughscoreDict = app_data_dict["HighScore"]
+    fetchedTotalCoins = app_data_dict["TotalCoins"]
     birdPrices = {"BlueBird":0, "GreenBird":100, "DarkGreenBird":150, "PinkBird":200}
+
+# Erasing game-data -  NOT YET USED
+def eraseGameData(runningPlatform=platform):
+    if runningPlatform == "browser":
+        keys = []
+        for i in range(window.localStorage.length):
+            keys.append(window.localStorage.key(i))
+        while keys: window.localStorage.removeItem(keys.pop())
+    else:
+        os.unlink("appdata.dat")
 # ----------------------- PLATFORM SPECIFIC FUNCTIONS -------------------- #
 
 
@@ -96,10 +114,7 @@ font = pygame.font.Font('fonts/Clarine.otf', 28)
 font2 = pygame.font.Font('fonts/TrendSlabFour.ttf', 16)
 
 # Sounds
-if platform == "browser":
-    audioExtn = "ogg"
-else:
-    audioExtn = "mp3"
+audioExtn = "ogg"
 button_press_sound = pygame.mixer.Sound(os.path.join("audios", f"beepshort.{audioExtn}"))
 wing_flap_sound = pygame.mixer.Sound(os.path.join("audios", f"flap.{audioExtn}"))
 wall_hit_sound = pygame.mixer.Sound(os.path.join("audios", f"explosion.{audioExtn}"))
@@ -116,12 +131,11 @@ welcome_img = pygame.image.load(os.path.join("background", "welcomescreen.png"))
 welcome_img = pygame.transform.scale(welcome_img, (screen_width, screen_height)).convert_alpha()
 game_bgimg = pygame.image.load(os.path.join("background", "day.jpg"))
 game_bgimg = pygame.transform.scale(game_bgimg, (screen_width, screen_height)).convert()
-game_bgimg2 = pygame.image.load(os.path.join("background", "night.jpg"))
+game_bgimg2 = pygame.image.load(os.path.join("background", "night.png"))
 game_bgimg2 = pygame.transform.scale(game_bgimg2, (screen_width, screen_height)).convert()
 background_image = game_bgimg
 background_image_width, background_image_height = background_image.get_rect().size
 
-print(start_music.get_length())
 # Bird images
 BlueBird = [pygame.image.load(os.path.join("birds/BlueBird", "BlueBird1.png")),
             pygame.image.load(os.path.join("birds/BlueBird", "BlueBird2.png")),
@@ -149,8 +163,11 @@ arrows = [pygame.image.load(os.path.join("others", 'left_button.png')),
 play_button_box = pygame.image.load(os.path.join("others", 'playbutton.png'))
 shop_button_box = pygame.image.load(os.path.join("others", "shopbutton.png"))
 menu_button_box = pygame.image.load(os.path.join("others", "menubutton.png"))
+leaderboard_button_box = pygame.image.load(os.path.join("others", "leaderboardButton.png"))
 speaker_images = [pygame.image.load(os.path.join("others", 'speaker_on.png')).convert_alpha(),
                   pygame.image.load(os.path.join("others", 'speaker_off.png')).convert_alpha()]
+screen_resize_images = [pygame.image.load(os.path.join("others", 'fullscreen.png')).convert_alpha(),
+                        pygame.image.load(os.path.join("others", 'shortscreen.png')).convert_alpha()]
 heart = pygame.image.load(os.path.join("others", "heart.png"))
 coin_image = pygame.image.load(os.path.join("others", "coin.png"))
 lock_image = pygame.image.load(os.path.join("others", "lock.png"))
@@ -319,16 +336,21 @@ def display_text_animation(string, verticle_position):
 
 
 async def main():
-    
+
     loadGameData()
+    
     # -------------- GENERAL VARIABLES --------------- # 
     # Others
     screen = "menuScreen"
     bird_list = [BlueBird, GreenBird, PinkBird, DarkGreenBird]
     sound_toggle_button = speaker_images[0]
+    screen_resize_button = screen_resize_images[0]
     index = 0  # for switching birds
     step = 0  # for changing selected bird sprites
-    
+    sound_toggle_area = pygame.Rect(920, 80, 50, 40)
+    screen_toggle_area = pygame.Rect(920, 30, 41, 40)
+    enableFullscreen = False
+
     # Initializing Bird Object
     selected_bird = bird_list[index]
     flappy_bird_object = Bird()
@@ -346,11 +368,11 @@ async def main():
     score = 0
     lives_count = 3
     lives_distance = [90, 130, 170]
-    scores_captured = [0, 0]  # at the event of collision with wall
+    game_over =  False
     # ----------------- GAME SCREEN ------------------ #
 
 
-    # ---------------- WELCOME SCREEN ---------------- #
+    # ----------------- MENU SCREEN ------------------ #
     # Hover reader typewriter text config + event
     typewriter_event = pygame.USEREVENT+2
     pygame.time.set_timer(typewriter_event, 100)
@@ -374,22 +396,62 @@ async def main():
     shop_area = pygame.Rect(680, 290, 143, 56)
     right_button_area = pygame.Rect(300, 250, 30, 40)
     left_button_area = pygame.Rect(160, 250, 30, 40)
-    sound_toggle_area = pygame.Rect(920, 30, 50, 40)
 
     # Other
     shop_button_display = False
-    game_over =  False
-    # ______________ WELCOME SCREEN --------------- #
+    # ----------------- MENU SCREEN ------------------ #
+
+
+    # _____________ HIGHSCORE SCREEN -------------- #
+    # Typewriter text config + event
+    text2 = 'Press Any Key To Restart'
+    text_len2 = 0
+    typewriter_event2 = pygame.USEREVENT+3
+    pygame.time.set_timer(typewriter_event2, 100)
+    text_surf2 = None
+    text_color2 = font_color
+
+
+    new_highscore = False
+    STEP = 0
+    flying_bird_x = 0
+    flying_bird_y = screen_height // 2 - 140
+    sign = +1
+    menu_button_area = pygame.Rect(screen_width//2 - 90, screen_height//2 + 220, 98, 45)
+    leaderboard_button_area = pygame.Rect(screen_width//2 + 40, screen_height//2 + 220, 47, 45)
+    # _____________ HIGHSCORE SCREEN -------------- #
+
+
+    def resetGameScreen():
+        nonlocal score, scroll, obstacles, coins_list, coin_count, flappy_bird_object, tiles, lives_count,  game_over, screen, step, index, new_highscore
+
+        game_over = False
+        new_highscore = False
+
+        flappy_bird_object.Y_POS = 200
+        flappy_bird_object.bird_rect.y = 200
+        pygame.display.update(flappy_bird_object.bird_rect)
+        index = 0  # for switching birds
+        step = 0  # for changing selected bird sprites
+ 
+        coins_list = [Coin(screen_width + (screen_width)/6), Coin(screen_width + 3*(screen_width)/6), Coin(screen_width + 5*(screen_width)/6)]
+        obstacles = [Obstacle(screen_width), Obstacle(screen_width + (screen_width)/3), Obstacle(screen_width + 2*(screen_width)/3)]
+        tiles = ceil(screen_width/background_image_width)+1
+        scroll = 0
+        coin_count = 0
+        score = 0
+        lives_count = 3
 
 
     def menu_screen():
-        global fetchedTotalCoins, birdPrices, app_data_dict
-        nonlocal selected_bird, step, left_arrow, right_arrow, sound_toggle_button, text_surf, shop_button_display, text_len, text, text_color, index, screen
+        global fetchedTotalCoins, birdPrices, app_data_dict, screen_resize_images
+        nonlocal selected_bird, step, left_arrow, right_arrow, sound_toggle_button, screen_toggle_area,screen_resize_button, text_surf, shop_button_display, text_len, text, text_color, index, screen, enableFullscreen, sound_toggle_area
         
         # ----------------------------- BLITTING IMAGES --------------------------- #
         game_window.blit(welcome_img, (0, 0)) 
         game_window.blit(coin_image, (10, 70))
-        game_window.blit(sound_toggle_button, (920, 30))
+        game_window.blit(sound_toggle_button, (sound_toggle_area.x, sound_toggle_area.y))
+        if runningOn == "browser": game_window.blit(screen_resize_button, (screen_toggle_area.x, screen_toggle_area.y))
         game_window.blit(selection_box, (200, 230))
         game_window.blit(left_arrow, (160, 250))
         game_window.blit(right_arrow, (300, 250))
@@ -449,6 +511,24 @@ async def main():
                 else:
                     text = "Turn-On Sound"
 
+        # Mouse pointer over resize button
+        if screen_toggle_area.collidepoint(pygame.mouse.get_pos()) and runningOn == "browser":
+            # Setting mouse pointer to hand shape
+            pygame.mouse.set_cursor(hand)
+            text = "Fullscreen"
+            text_color = (0, 0, 0)
+
+            if left and screen_toggle_area.collidepoint(pygame.mouse.get_pos()):
+                if enableFullscreen:
+                    screen_resize_button = screen_resize_images[1]
+                else:
+                    screen_resize_button = screen_resize_images[0]
+            else:
+                if enableFullscreen:
+                    text = "Minimize"
+                else:
+                    text = "Fullscreen"
+
         # Mouse pointer over play button
         if play_area.collidepoint(pygame.mouse.get_pos()):
             # Setting mouse pointer to hand shape
@@ -501,7 +581,8 @@ async def main():
                 midleft=game_window.get_rect().midleft).move(move_x, 220))
 
         # -------------------- DISPLAYING STUFF FOR LOCKED BIRDS ------------------ #
-        if fetchedBirdStatus[[k for k, v in globals().items() if v == selected_bird][0]] == 'locked':
+        if app_data_dict["BirdsStatus"][[k for k, v in globals(
+                            ).items() if v == selected_bird][0]] == "locked":
             # Creating a surface for veil
             veil = pygame.Surface((75, 60))
             veil.set_alpha(128)
@@ -549,26 +630,29 @@ async def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Storing mouse coordinates
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                
+            
                 if play_area.collidepoint(mouse_x, mouse_y):
                     if not shop_button_display:
                         button_press_sound.play()
                         pygame.mixer.Sound.stop(start_music)
+                        pygame.time.set_timer(startMusicTimer, 0)
+                        flappy_bird_object.fly_img = selected_bird
+                        flappy_bird_object.fall_img = selected_bird[2]
                         screen = "gameScreen"
                     else:
                         lock_sound.play()
 
                 elif shop_area.collidepoint(mouse_x, mouse_y):
                     if shop_button_display:
-                        if fetchedTotalCoins >= birdPrices[selected_bird]:
+                        if fetchedTotalCoins >= birdPrices[[k for k, v in globals().items() if v == selected_bird][0]]:
                             unlock_sound.play()
-                            fetchedBirdStatus[[k for k, v in globals(
-                            ).items() if v == selected_bird][0]] = 'unlocked'
                             fetchedTotalCoins -= 100
-                            app_data_dict['TotalCoins'] -= 100
-                            saveGameData(app_data_dict)
-                    else:
-                        lock_sound.play()
+                            app_data_dict["BirdsStatus"][[k for k, v in globals(
+                            ).items() if v == selected_bird][0]] = "unlocked"
+                            app_data_dict["TotalCoins"] -= 100
+                            saveGameData()
+                        else:
+                            lock_sound.play()
 
                 elif left_button_area.collidepoint(mouse_x, mouse_y):
                     button_press_sound.play()
@@ -595,13 +679,19 @@ async def main():
                     else:
                         for sound in sounds:
                             sound.set_volume(1)
+
+                elif screen_toggle_area.collidepoint(mouse_x, mouse_y) and runningOn == "browser":
+                    if screen_resize_button == screen_resize_images[0]:
+                        enableFullscreen = True
+                    else:
+                        enableFullscreen = False
         # --------------------------- LISTENING TO EVENTS ------------------------- #
 
-    def game_screen(selected_bird):
+    def game_screen():
 
-        global background_image, font_color
-        nonlocal score, scroll, obstacles, coins_list, coin_count, score, flappy_bird_object, tiles, lives_count, lives_distance, scores_captured, game_over
-    
+        global background_image, font_color, top3PersonalHughscoreDict, app_data_dict, fetchedTotalCoins
+        nonlocal score, scroll, obstacles, coins_list, coin_count, score, flappy_bird_object, tiles, lives_count, lives_distance, game_over, screen, new_highscore, startMusicTimer, selected_bird
+
         # Silly little bird exhausted all its lives anddd DIEDDDD
         if game_over:
             wall_hit_sound.play()
@@ -610,10 +700,29 @@ async def main():
                 flappy_bird_object.image, (flappy_bird_object.bird_rect.x, flappy_bird_object.bird_rect.y))
             pygame.display.update()
 
+
+            # fixing highscore, Total_Coins and BirdsStatus Value
+            if score//100 > top3PersonalHughscoreDict['#1']:
+                new_highscore = True
+            top3PersonalHighscoreList = sorted(list(top3PersonalHughscoreDict.values()), reverse=True)
+            for i in range(3):
+                if score//100 > top3PersonalHighscoreList[i]:
+                    top3PersonalHighscoreList.insert(i, score//100)
+                    top3PersonalHighscoreList.pop()
+                    top3PersonalHughscoreDict = dict(zip([f"#{j}" for j in range(1,4)],top3PersonalHighscoreList))
+                    app_data_dict["HighScore"] = top3PersonalHughscoreDict
+                    break
+            fetchedTotalCoins += coin_count
+            app_data_dict["TotalCoins"] += coin_count
+            
+            # Save game data
+            saveGameData()
+
             # Changing to scoreScreen
-            pygame.time.delay(2000)
-            __import__('sys').exit()
-            # score_screen(selected_bird, old_highscore, coin_count)
+            pygame.time.wait(2000)
+            screen = "scoreScreen"
+            start_music.play(maxtime=29000)
+            pygame.time.set_timer(startMusicTimer, 29000)
         else:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -627,14 +736,14 @@ async def main():
 
             # highscore area
             highscore = font.render(
-                "HighScore: " + str(old_highscore), True, font_color)
+                str("HighScore: ").rjust(11) + str(top3PersonalHughscoreDict['#1']).rjust(3), True, font_color)
             highscoreRect = highscore.get_rect()
             highscoreRect.center = (880, 40)
 
             # Points area
-            points = font.render("Points: " + str(score//100), True, font_color)
+            points = font.render(str("Distance: ").rjust(11) + str(score//100).rjust(3), True, font_color)
             pointsRect = points.get_rect()
-            pointsRect.center = (900, 70)
+            pointsRect.center = (880, 70)
 
             game_window.blit(points, pointsRect)
             game_window.blit(highscore, highscoreRect)
@@ -646,7 +755,7 @@ async def main():
             game_window.blit(background_image,
                             (i*background_image_width + scroll, 0))
             
-        scroll -= 3
+        scroll -= 2
         
         # Resest the scroll
         if abs(scroll) > background_image_width:
@@ -661,19 +770,23 @@ async def main():
             # Day background
             background_image = game_bgimg
             font_color = (0, 0, 0)
-        # Changing obstacle passage length based on score
-        if (score//100 >= 5) and (score//100 % 5 == 0):
-            Obstacle.passage_length -= 1/50
-        print(Obstacle.passage_length)
-        # else:
-        #     Obstacle.passage_length = 130
+        # # Changing obstacle passage length based on score
+        # if (score//100 >= 5) and (score//100 % 5 == 0):
+        #     Obstacle.passage_length -= 1/50
+        # print(Obstacle.passage_length)
+        # # else:
+        # #     Obstacle.passage_length = 130
         # ------------------------ ARENA BACKGROUND ------------------------ #
 
 
         # ------------------------ LIFE-LOSING CASES ----------------------- #
+        def findRevivalPlace():
+            closestPillar = min(obstacles, key = lambda obj: abs(flappy_bird_object.bird_rect.x-obj.rect1.x))
+            return closestPillar.i+30
+        
         # Collision detection function
         def check_collision():
-            nonlocal game_over, lives_count, scores_captured
+            nonlocal game_over, lives_count
             for wall_with_passage in obstacles:
                 collide_list = [wall_with_passage.rect1, wall_with_passage.rect2,
                                 wall_with_passage.rect3, wall_with_passage.rect4]
@@ -681,14 +794,14 @@ async def main():
                     collide_list)
                 if check_collision >= 0:
                     if lives_count > 0:
-                        scores_captured.append(score)
-                        scores_captured = scores_captured[-2:]
-                        if abs(scores_captured[0]-scores_captured[1]) > 50:
-                            life_losing_beep.play()
-                            lives_count -= 1
-                            pygame.draw.rect(game_window, (255, 87, 51),
-                                            collide_list[check_collision])
-                            pygame.display.update(collide_list[check_collision])
+                        life_losing_beep.play()
+                        lives_count -= 1
+                        pygame.draw.rect(game_window, (255, 87, 51),
+                                        collide_list[check_collision])
+                        pygame.display.update(collide_list[check_collision])
+                        flappy_bird_object.Y_POS = findRevivalPlace()
+                        pygame.display.update(flappy_bird_object.bird_rect)
+                        # pygame.time.wait(1000)
 
                     else:
                         pygame.draw.rect(game_window, (255, 87, 51),
@@ -697,12 +810,12 @@ async def main():
 
         # bird hitting the wall or ground
         if flappy_bird_object.bird_rect.y > 440 or flappy_bird_object.bird_rect.y < 0:
-            if lives_count > 1:
+            if lives_count > 0:
                 life_losing_beep.play()
                 lives_count -= 1
-                flappy_bird_object.Y_POS = 200
+                flappy_bird_object.Y_POS = findRevivalPlace()
                 pygame.display.update(flappy_bird_object.bird_rect)
-                pygame.time.delay(500)
+                # pygame.time.wait(1000)
             else:
                 game_over = True
         # ------------------------ LIFE-LOSING CASES ----------------------- #
@@ -748,14 +861,178 @@ async def main():
         score_board()
 
 
+    def score_screen():
+        
+        global top3PersonalHughscoreDict, background_image, font_color, fetchedTotalCoins, screen_resize_images
+        nonlocal score, sound_toggle_button, STEP, flying_bird_x, flying_bird_y, sign, leaderboard_button_area, text2, text_len2, text_surf2, text_color2, typewriter_event2, menu_button_area, sound_toggle_area, new_highscore, screen, startMusicTimer, screen_resize_button, screen_toggle_area, enableFullscreen, selected_bird
+
+        # -------------------- DISPLAYING STUFF ON SCREEN ----------------------- #
+        game_window.blit(background_image, (0, 0))
+        game_window.blit(sound_toggle_button, (sound_toggle_area.x, sound_toggle_area.y))
+        if runningOn == "browser": game_window.blit(screen_resize_button, (screen_toggle_area.x, screen_toggle_area.y))
+        game_window.blit(
+            menu_button_box, (menu_button_area.x, menu_button_area.y))
+        game_window.blit(
+            leaderboard_button_box, (leaderboard_button_area.x, leaderboard_button_area.y))
+        score_points = font.render(
+            "Your Score: " + str(score//100), True, font_color)
+        scoreRect = score_points.get_rect()
+        scoreRect.center = (screen_width // 2, screen_height // 2 + 40)
+        game_window.blit(score_points, scoreRect)
+        game_window.blit(
+            selected_bird[STEP//20], (flying_bird_x, flying_bird_y))
+        # -------------------- DISPLAYING STUFF ON SCREEN ----------------------- #
+
+        if STEP % 20 == 0:
+            sign *= -1
+
+        STEP += 2
+        if STEP > 40:
+            STEP = 0
+
+        flying_bird_x += 8
+        if flying_bird_x > screen_width:
+            flying_bird_x = 0
+
+
+        # ------------------- CHECKING FOR NEW HIGHSCORE ---------------------- #
+        if new_highscore:
+            oldScore = font.render(f"Your old persnonal best was: {top3PersonalHughscoreDict['#2']}", True, font_color)
+            oldScoreRect = oldScore.get_rect()
+            oldScoreRect.center = (screen_width // 2, screen_height // 2 + 160)
+            game_window.blit(oldScore, oldScoreRect)
+            display_text_animation("NEW HIGHSCORE REACHED !!!", 100)
+        else:
+            display_text_animation("GAME OVER !   TRY AGAIN !", 100)
+        # ------------------- CHECKING FOR NEW HIGHSCORE ---------------------- #
+
+
+        # ------------------------ TEXT ANIMATION ----------------------------- #
+        if text_surf2:
+            move_x = (screen_width//2) - (text_surf2.get_width()//2)
+            game_window.blit(text_surf2, text_surf2.get_rect(
+                midleft=game_window.get_rect().midleft).move(move_x, -50))
+        pygame.display.update()
+        # ------------------------ TEXT ANIMATION ----------------------------- #
+
+        
+        # --------------------- LISTENING TO EVENTS --------------------------- #
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == startMusicTimer:
+                start_music.play(maxtime=29000)
+            if event.type == typewriter_event2:
+                text_len2 += 1
+                if text_len2 > len(text2):
+                    text_len2 = 0
+                text_surf2 = None if text_len2 == 0 else font.render(
+                    text2[:text_len2], True, text_color2)
+            if event.type == pygame.KEYDOWN:
+                pygame.mixer.Sound.stop(start_music)
+                pygame.time.set_timer(startMusicTimer, 0)
+                screen = "gameScreen"
+                resetGameScreen()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                if sound_toggle_area.collidepoint(mouse_x, mouse_y):
+                    if sound_toggle_button == speaker_images[0]:
+                        for sound in sounds:
+                            sound.set_volume(0)
+                    else:
+                        for sound in sounds:
+                            sound.set_volume(1)
+                elif menu_button_area.collidepoint(mouse_x, mouse_y):
+                    button_press_sound.play()
+                    pygame.mixer.Sound.stop(start_music)
+                    pygame.time.set_timer(startMusicTimer, 0)
+                    pygame.time.set_timer(startMusicTimer, 29000)
+                    start_music.play(maxtime=29000)
+                    resetGameScreen()
+                    selected_bird = bird_list[0]
+                    screen = "menuScreen"
+                elif leaderboard_button_area.collidepoint(mouse_x, mouse_y):
+                    button_press_sound.play()
+                    pygame.mixer.Sound.stop(start_music)
+                    # screen = "leaderboardScreen"
+                elif screen_toggle_area.collidepoint(mouse_x, mouse_y) and runningOn == "browser":
+                    if screen_resize_button == screen_resize_images[0]:
+                        enableFullscreen = True
+                    else:
+                        enableFullscreen = False
+        # --------------------- LISTENING TO EVENTS --------------------------- #            
+
+
+        # -------------- CHANGING CURSOR ON HOVERABLE BUTTONS ----------------- #
+        left, middle, right = pygame.mouse.get_pressed()
+
+        if True:
+            # Setting cursor to default shape
+            pygame.mouse.set_cursor()
+            if pygame.mixer.Sound.get_volume(sounds[0]) == 0.0:
+                sound_toggle_button = speaker_images[1]
+            else:
+                sound_toggle_button = speaker_images[0]
+            text2 = "Press Any Key To Restart"
+            text_color2 = (0, 0, 0)
+
+        # Mouse pointer over resize button
+        if screen_toggle_area.collidepoint(pygame.mouse.get_pos()) and runningOn == "browser":
+            # Setting mouse pointer to hand shape
+            pygame.mouse.set_cursor(hand)
+            text2 = "Fullscreen"
+            text_color2 = (0, 0, 0)
+
+            if left and screen_toggle_area.collidepoint(pygame.mouse.get_pos()):
+                if enableFullscreen:
+                    screen_resize_button = screen_resize_images[1]
+                else:
+                    screen_resize_button = screen_resize_images[0]
+            else:
+                if enableFullscreen:
+                    text2 = "Minimize"
+                else:
+                    text2 = "Fullscreen"
+
+        if sound_toggle_area.collidepoint(pygame.mouse.get_pos()):
+            pygame.mouse.set_cursor(hand)
+            if left and sound_toggle_area.collidepoint(pygame.mouse.get_pos()):
+                if pygame.mixer.Sound.get_volume(sounds[0]) == 0.0:
+                    sound_toggle_button = speaker_images[1]
+                else:
+                    sound_toggle_button = speaker_images[0]
+            
+            if sound_toggle_button == speaker_images[0]:
+                text2 = "Turn Speaker-Off"
+                text_color2 = (0, 0, 0)
+            else:
+                text2 = "Turn Speaker-On"
+                text_color2 = (0, 0, 0)
+        
+        if menu_button_area.collidepoint(pygame.mouse.get_pos()):
+            pygame.mouse.set_cursor(hand)
+            text2 = "Go Back to Main Menu"
+            text_color2 = (0, 0, 0)
+        
+        if leaderboard_button_area.collidepoint(pygame.mouse.get_pos()):
+            pygame.mouse.set_cursor(hand)
+            text2 = "See Global Leaderboard"
+            text_color2 = (0, 0, 0)
+        # ____________________________________________________
+
     running = True
-    while running:
+    while running: 
+        if enableFullscreen and runningOn=="browser":
+            maximizeGameForBrowser()
+        elif not enableFullscreen and runningOn=="browser":
+            minimizeGameForBrowser()
+
         if screen == "menuScreen":
             menu_screen()
         elif screen == "gameScreen":
-            game_screen(selected_bird)
-        
-        
+            game_screen()
+        elif screen == "scoreScreen":
+            score_screen()
         
         clock.tick(fps)
         pygame.display.update()
