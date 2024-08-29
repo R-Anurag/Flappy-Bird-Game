@@ -334,6 +334,106 @@ config = {
            top:150px;
            right:10px;
         }
+
+        #myBackground {
+            height: 100%;
+            width: 100%;
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topMessage{
+            width: 100%;
+            height: 35px;
+            position: absolute;
+            background: rgba(255,255,255,.7);
+            top: 5px;
+            text-align: justify;
+            text-justify: inter-word;
+        }
+
+        .topMessage p{
+            font-family:Serif; 
+            color: black; 
+            margin-top: 3px; 
+            margin-left: 10px; 
+            margin-right: 10px; 
+            font-size:1.4vw; 
+            text-align: center;
+        }
+
+        .bottomMessage{
+            width: 100%;
+            height: 50px;
+            position: absolute;
+            background: rgba(255,255,255,.7);
+            bottom: 5px;
+            text-align: justify;
+            text-justify: inter-word;;
+        }
+
+        .bottomMessage p{
+            font-family:Serif; 
+            color: black; 
+            margin-top: 3px; 
+            margin-left: 10px; 
+            margin-right: 10px; 
+            font-size:1.4vw; 
+            text-align: center;
+        }
+
+        .switch{
+            color-scheme: only light;
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            height: 80px;
+            width: 80px;
+            background: linear-gradient(#eee, #ccc, #eee);
+            border: 2px solid black;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .switch .btn{
+            position: relative;
+            width: 25px;
+            height: 40px;
+            background: linear-gradient(#fff, #777, #fff);
+            border-radius: 6px;
+            border: 2px solid black;
+            cursor: pointer;
+        }
+
+        .switch .btn::before{
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 0;
+            width: 100%;
+            height: 85%;
+            background: linear-gradient(#fff, #fff);
+            border-radius: 4px;
+        }
+
+        .on .switch .btn::before{
+            top: 0;
+        }
+
+        #audio{
+            display: none;
+        }
+
+        #myBackground.on{
+            background-color: black;
+        }
     </style>
 
     <script src="https://pygame-web.github.io/archives/0.9//browserfs.min.js"></script>
@@ -349,37 +449,16 @@ config = {
             <progress value="0" max="100" id="progress"></progress>
         </div>
     </div>
-    <div style="width: 100%;
-                height: 50px;
-                position: absolute;
-                background: rgba(255,255,255,.7);
-                bottom: 5px;
-                text-align: justify;
-                text-justify: inter-word;;
-        ">
-        <p style="font-family:Serif; color: antiquewhite; margin-top: 3px; margin-left: 10px; margin-right: 10px; font-size:1.4vw; text-align: center;"><var>Before you begin:</var> wondering about your game data? Don`t worry! Your unlocked assets, highscore and coins are safely stored in your browser`s local storage and get loaded whenever you choose to revisit this site. Switching the game window to fullscreen mode is advized for a better game-experience :)</p>
+    <div class="bottomMessage">
+        <p><var>Before you begin:</var> wondering about your game data? Don`t worry! Your unlocked assets, highscore and coins are safely stored in your browser`s local storage and get loaded whenever you choose to revisit this site. Switching the game window to fullscreen mode is advized for a better game-experience -`♡´-</p>
     </div>
-    <div style="width: 100%;
-                height: 35px;
-                position: absolute;
-                background: rgba(255,255,255,.7);
-                top: 5px;
-                text-align: justify;
-                text-justify: inter-word;;
-        ">
-        <p style="font-family:Serif; color: antiquewhite; margin-top: 3px; margin-left: 10px; margin-right: 10px; font-size:1.4vw; text-align: center;"><var>If you liked playing this game, you can appreciate the effort by starring the <a href="https://www.w3schools.com/" title="You need an account at Github" target="_blank">github repo of the project</a> or simply <a href="mailto:raianurag3189@gmail.com" title="this will open your mail app" target="_blank">dropping the developer a mail</a></var></p>
+    <div class="topMessage">
+        <p><var>If you liked playing this game, you can appreciate the effort by starring the <a href="https://www.w3schools.com/" title="You need an account at Github" target="_blank">github repo of the project</a> or simply <a href="mailto:raianurag3189@gmail.com" title="this will open your mail app" target="_blank">dropping the developer a mail</a></var>𓍯𓂃𓏧♡</p>
     </div>
-    <div id="myBackground"
-         style="height: 100%;
-                width: 100%;
-                background-color: transparent;
-                background-repeat: no-repeat;
-                background-size: cover;
-                background-position: center center;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                ">
+    <div id="myBackground">
+        <div class="switch">
+            <a title="Turn background lights on/off"><div class="btn"></div></a>
+        </div>    
     </div>
 
     <canvas class="emscripten" id="canvas"
@@ -444,8 +523,16 @@ height="1px"
     <div id="pyconsole">
         <div id="terminal" tabIndex=1 align="left"></div>
     </div>
-
+    <audio id="audio" src="click.mp3" autostart="false"></audio>
     <script type="application/javascript">
+
+    let btn = document.querySelector('.btn');
+    let myBackground = document.querySelector('#myBackground');
+    let audio = document.querySelector('#audio');
+    btn.onclick = function(){
+        myBackground.classList.toggle('on');
+        audio.play();
+    }
 
     async function custom_onload(debug_hidden) {
         // this is called before anything python is loaded
