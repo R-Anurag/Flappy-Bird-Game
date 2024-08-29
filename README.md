@@ -17,7 +17,7 @@
 
 ## Introduction
 
-The Flappy Bird Game is a ~~pixelated~~<sup> this is not 2015 lol </sup> adventure where you guide a determined bird through a maze of treacherous pipes. Tap, flap, and aim for the high score. Oh, and do not miss out on hoarding up a lot of bird-currency! Do not worry, we are not being greedy. Aksually🤓☝️, they let you free a lot of caged birds from the prison to fly around with! No, I do NOT know how they got there in the first place. I am just as clueless as you are! 🌟🎮
+The Flappy Bird Game is a ~~pixelated~~<sup> this is not 2015 lol </sup> adventure where you guide a determined bird through a maze of treacherous pipes. Tap, flap, and aim for the high score. Oh, and do not miss out on hoarding up a lot of bird-currency! Don’t worry, we’re not being greedy here. Aksually🤓☝️, they let you free a lot of caged birds from the prison to fly around with! No, I do NOT know how they got there in the first place. I’m just as clueless as you are! 😂
 
 ## Installation
 
