@@ -17,7 +17,7 @@
 
 ## Introduction
 
-The Flappy Bird Game is a pixelated adventure where you guide a determined bird through a maze of treacherous pipes. Tap, flap, and aim for the high score! Oh, and don`t miss out on hoarding up a lot of bird-currency. They let you free a lot of caged birds to fly around with! 🌟🎮
+The Flappy Bird Game is a ~~pixelated~~H<sub>what is this? 2015? lol</sub>O adventure where you guide a determined bird through a maze of treacherous pipes. Tap, flap, and aim for the high score! Oh, and don`t miss out on hoarding up a lot of bird-currency. They let you free a lot of caged birds to fly around with! 🌟🎮
 
 ## Installation
 
