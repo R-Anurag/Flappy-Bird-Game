@@ -1,7 +1,7 @@
 # 🐦 Flappy Bird Game
 
 #### Welcome to the Flappy Bird Game repository! Get ready to flap those wings and dodge those pipes. 🌟🦜
-- I guess apologies are in order for my very informal language :)
+> I guess apologies are in order for what`s going to be a very informal read :)
 ### For those who say just show it already, [see the game hosted on github pages](https://r-anurag.github.io/flappyBirdGame/)
 ### **You should be aware:-** 
 - *First Flight* (First time loading the game): When you launch our nest-fresh Flappy Bird game for the very first time, it is like a baby bird stretching its wings. 🐣 The game files flutter in, feathers ruffled, and take their sweet time settling down (this is just how pygbag functions) 
