@@ -1,10 +1,11 @@
 # 🐦 Flappy Bird Game
 
 #### Welcome to the Flappy Bird Game repository! Get ready to flap those wings and dodge those pipes. 🌟🦜
+- I guess apologies are in order for my very informal language :)
 ### For those who say just show it already, [see the game hosted on github pages](https://r-anurag.github.io/flappyBirdGame/)
 ### **You should be aware:-** 
 - *First Flight* (First time loading the game): When you launch our nest-fresh Flappy Bird game for the very first time, it is like a baby bird stretching its wings. 🐣 The game files flutter in, feathers ruffled, and take their sweet time settling down (this is just how pygbag functions) 
-- *Subsequent Flaps* (Subsequent loads): Now, here’s where the magic happens! Once you’ve flapped your way through that initial loading, our game becomes faster than a caffeinated hummingbird. It gets up and awake in a giffy should you visit the bird-nest (I mean the game site here) again!🚀 
+- *Subsequent Flaps* (Subsequent loads): Now, here’s where the magic happens! Once you’ve flapped your way through that initial loading, our game becomes faster than a caffeinated hummingbird. It gets up and awake in a giffy should you visit the bird-nest (I mean the game site here) again!🚀
 
 ## Table of Contents
 
@@ -34,10 +35,10 @@ The Flappy Bird Game is a ~~pixelated~~<sup> this is not 2015 lol </sup> adventu
 
 ## Features
 - Catchy soundtrack (our bird is a singer ୧⍤⃝🎙 💐)
-- They are like **F.R.I.E.N.D.S.** (As your coin stash grows, new birds keep joining the your feathery flock—each with its own quirks and flapping style. They all await your majesty`s command!)
+- They are like **F.R.I.E.N.D.S.** (As your coin stash grows, new birds keep joining your feathery flock—each with its own quirks and flapping style. They all await your majesty`s command!).
 - Revival 🩹 (the silly bird can fly into the pipes thrice with a life getting over each time BEFORE IT FINALLY TAKES ITS LAST FLAP ⚰️).
 - Global leaderboard 🏆 (because every bird wants to be famous).
-- Graphics are alright 🏙 (was primarily my own decision. Our bird is anything but demanding! Maybe it was a cow in its past life but hey, not that we are gonna know for sure lol).
+- Graphics are alright 🏙 (was primarily my own decision. Our bird is anything but demanding!).
 ## Contributing
 
 Feeling chirpy? Contribute to our nest! Report bugs, suggest new designs, or share your best flap strategies. 🐦🔍
