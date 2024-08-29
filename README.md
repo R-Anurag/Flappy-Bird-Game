@@ -3,8 +3,8 @@
 #### Welcome to the Flappy Bird Game repository! Get ready to flap those wings and dodge those pipes. 🌟🦜
 ### For those who say just show it already, [see the game hosted on github pages](https://r-anurag.github.io/flappyBirdGame/)
 ### **You should be aware:-** 
-- *First Flight* (First time loading the game): When you launch our nest-fresh Flappy Bird game for the very first time, it’s like a baby bird stretching its wings. 🐣 The game files flutter in, feathers ruffled, and take their sweet time settling down.
-- *Subsequent Flaps* (Subsequent loads): Now, here’s where the magic happens! Once you’ve flapped your way through that initial loading, our game becomes faster than a caffeinated hummingbird. 🚀 
+- *First Flight* (First time loading the game): When you launch our nest-fresh Flappy Bird game for the very first time, it is like a baby bird stretching its wings. 🐣 The game files flutter in, feathers ruffled, and take their sweet time settling down (this is just how pygbag functions) 
+- *Subsequent Flaps* (Subsequent loads): Now, here’s where the magic happens! Once you’ve flapped your way through that initial loading, our game becomes faster than a caffeinated hummingbird. It gets up and awake in a giffy should you visit the bird-nest(I mean the game site here) again!🚀 
 
 ## Table of Contents
 
