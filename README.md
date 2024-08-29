@@ -30,7 +30,7 @@ The Flappy Bird Game is a ~~pixelated~~<sup> this is not 2015 lol </sup> adventu
 - Tap `UP arrow-key` to flap.
 - Avoid the pipes like a pro.
 - Bird Currency! <img src="others/coin.png" alt="🪙" width="16" height="16"> Gather these shiny treasures as you flap through the skies
-- Celebrate each successful flap with a victory dance! 💃 (not mandatory lol)
+- Celebrate each successful flap with a victory dance! 💃 (perhaps? no pressure!)
 
 ## Features
 - Catchy soundtrack (our bird is a singer ୧⍤⃝🎙 💐)
