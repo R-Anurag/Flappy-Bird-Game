@@ -17,7 +17,7 @@
 
 ## Introduction
 
-The Flappy Bird Game is a ~~pixelated~~<sup>what is this? 2015? lol</sup> adventure where you guide a determined bird through a maze of treacherous pipes. Tap, flap, and aim for the high score! Oh, and don`t miss out on hoarding up a lot of bird-currency. They let you free a lot of caged birds to fly around with! 🌟🎮
+The Flappy Bird Game is a ~~pixelated~~<sup> this is not 2015 lol </sup> adventure where you guide a determined bird through a maze of treacherous pipes. Tap, flap, and aim for the high score. Oh, and don`t miss out on hoarding up a lot of bird-currency! Don`t worry, we`re not being greedy since it`s not for us anyway. They let you free a lot of caged birds from the prison to fly around with! No, I do NOT know how they got their in the first place. I`m just as clueless as you are! 🌟🎮
 
 ## Installation
 
@@ -29,15 +29,15 @@ The Flappy Bird Game is a ~~pixelated~~<sup>what is this? 2015? lol</sup> advent
 
 - Tap `UP arrow-key` to flap.
 - Avoid the pipes like a pro.
+- Bird Currency! Gather these shiny treasures as you flap through the skies
 - Celebrate each successful flap with a victory dance! 💃 (not mandatory lol)
 
 ## Features
-
-- Graphics are alright 🏙.
 - Catchy soundtrack (our bird is a singer ୧⍤⃝🎙 💐)
-- Revival 🩹 (the silly bird can fly into the pipes three times with a life getting over on each BEFORE IT TAKES ITS LAST FLAP ⚰️).
+- They are like **F.R.I.E.N.D.S.** (As your coin stash grows, new birds keep joining the your feathery flock—each with its own quirks and flapping style. They all await your majesty`s command!)
+- Revival 🩹 (the silly bird can fly into the pipes thrice with a life getting over each time BEFORE IT FINALLY TAKES ITS LAST FLAP ⚰️).
 - Global leaderboard 🏆 (because every bird wants to be famous).
-
+- Graphics are alright 🏙 (was primarily my own decision. Our bird is anything but demanding! Maybe it was a cow in its past life but hey, not that we are gonna know for sure lol).
 ## Contributing
 
 Feeling chirpy? Contribute to our nest! Report bugs, suggest new designs, or share your best flap strategies. 🐦🔍
