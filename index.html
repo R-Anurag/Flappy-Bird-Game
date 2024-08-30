@@ -526,14 +526,6 @@ height="1px"
     <audio id="audio" src="click.mp3" autostart="false"></audio>
     <script type="application/javascript">
 
-    let btn = document.querySelector('.btn');
-    let myBackground = document.querySelector('#myBackground');
-    let audio = document.querySelector('#audio');
-    btn.onclick = function(){
-        myBackground.classList.toggle('on');
-        audio.play();
-    }
-
     async function custom_onload(debug_hidden) {
         // this is called before anything python is loaded
         // make your js customization here
@@ -544,6 +536,14 @@ height="1px"
         transfer.hidden = debug_hidden
         info.hidden = debug_hidden
         box.hidden =  debug_hidden
+
+        let btn = document.querySelector('.btn');
+        let myBackground = document.querySelector('#myBackground');
+        let audio = document.querySelector('#audio');
+        btn.onclick = function(){
+            myBackground.classList.toggle('on');
+            audio.play();
+        }
 
     }
 
