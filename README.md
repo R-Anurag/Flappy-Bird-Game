@@ -1,6 +1,5 @@
 # 🐦 Flappy Bird Game
 
-#### Welcome to the Flappy Bird Game repository! Get ready to flap those wings and dodge those pipes. 🌟🦜
 #### A modern take on the classic Flappy Bird — built with Python and deployed on GitHub Pages. Navigate your bird through obstacles, collect coins, unlock new characters, and compete on a global leaderboard.
 🎮 Play Now: [Hosted on GitHub Pages](https://r-anurag.github.io/flappyBirdGame/)
 
