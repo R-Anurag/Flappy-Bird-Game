@@ -22,7 +22,7 @@ The Flappy Bird Game is a ~~pixelated~~<sup> this is not 2015 lol </sup> adventu
 
 ## Installation
 
-1. Clone this repository: `git clone https://github.com/yourusername/flappy-bird-game.git`
+1. Clone this repository: `git clone https://github.com/R-Anurag/flappy-bird-game.git`
 2. Install dependencies: `shall update you here`
 3. Run the game: `shall update you here`
 
