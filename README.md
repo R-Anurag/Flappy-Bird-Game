@@ -1,7 +1,7 @@
 # 🐦 Flappy Bird Game
 
 #### A modern take on the classic Flappy Bird — built with Python and deployed on GitHub Pages. Navigate your bird through obstacles, collect coins, unlock new characters, and compete on a global leaderboard.
-🎮 Play Now: [Hosted on GitHub Pages](https://r-anurag.github.io/flappyBirdGame/)
+🎮 Play Now: [Hosted on GitHub Pages](https://r-anurag.github.io/Flappy-Bird-Game)
 
 ## Overview
 The Flappy Bird Game is an interactive web-based implementation of the iconic arcade challenge. Players guide a bird through a series of pipes while collecting in-game currency to unlock new characters.
